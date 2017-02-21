@@ -1,0 +1,100 @@
+
+<!--index.wxml-->
+<view class="header">
+  <view class="weui-flex">
+    <view class="div1">
+      <view class="weui-flex">
+        <view class="left">{{matchStat}}</view>
+        <view class="right">{{matchCount}}场</view>
+      </view>
+    </view>
+    <view class="div2">
+      <view class="weui-flex">
+        <view class="left">命中率</view>
+        <view class="middle">
+          <view class="per" animation="{{animationPer}}"></view>
+        </view>
+        <view class="right">{{matchJudge}}%</view>
+      </view>
+    </view>
+  </view>
+  <view class="weui-flex" bindtap="swichNav">
+    <view class="tab-item {{currentTab==0 ? 'hover' : ''}}" data-id="0">按赛程</view>
+    <view class="tab-item {{currentTab==1 ? 'hover' : ''}}" data-id="1">按联赛</view>
+    <view class="tab-item {{currentTab==2 ? 'hover' : ''}}" data-id="2">筛选</view>
+    <view class="tab-item {{currentTab==3 ? 'hover' : ''}}" data-id="3">{{tabClander}}
+      <view class="calendar_show" catchtap="bindCalendarShow" hidden="{{calendarShowHidden}}"></view>
+    </view>
+  </view>
+</view>
+<scroll-view class="content" scroll-y="true" style="height: {{scrollViewHeight}}px" upper-threshold="0" lower-threshold="0" bindscrolltoupper="refesh" bindscrolltolower="loadMore" bindscroll="scroll">
+  <view class="list" wx:for="{{list}}" wx:key="MatchId" wx:for-item="item" bindtap="bindListTap" data-sort="{{item.MatchId}}" hidden="{{item.hidden}}">
+    <view class="weui-flex intro">
+      <view class="match">{{item.LeagueName}}</view>
+      <view class="date">{{item.MatchTime}}</view>
+      <view class="gameno">{{item.GameNo}}</view>
+    </view>
+    <view class="weui-flex team">
+      <view class="host">{{item.Team.Name.Host}}（{{item.Team.Sort.Host}}）</view>
+      <view class="vs">{{item.Team.VS.All}}/{{item.Team.VS.Half}}</view>
+      <view class="guest">{{item.Team.Name.Guest}}（{{item.Team.Sort.Guest}}）</view>
+    </view>
+    <view class="weui-flex slzs">
+      <view class="host">{{item.Slzs.Host}}</view>
+      <view class="pl weui-flex">
+        <view class="win">{{item.Slzs.PL.Win}}</view>
+        <view class="draw">{{item.Slzs.PL.Draw}}</view>
+        <view class="lose">{{item.Slzs.PL.Lose}}</view>
+      </view>
+      <view class="guest">{{item.Slzs.Guest}}</view>
+    </view>
+    <view class="weui-flex judgment">
+      <view class="win">
+        <view class="per {{item.Judge.Win.Choice}}">胜{{item.Judge.Win.Per}}</view>
+      </view>
+      <view class="draw">
+        <view class="per {{item.Judge.Draw.Choice}}">平{{item.Judge.Draw.Per}}</view>
+        <view class="star">{{item.Judge.Star}}</view>
+      </view>
+      <view class="lose">
+        <view class="per {{item.Judge.Lose.Choice}}">负{{item.Judge.Lose.Per}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="more {{moreClass}}">
+    <view class="more-box" bindtap="bindMoreTap">{{moreText}}</view>
+  </view>
+</scroll-view>
+<view class="cover" hidden="{{coverHidden ? true : false}}" style="width:{{winWidth}}px;height: {{scrollViewHeight}}px">
+  <view class="match-list" hidden="{{filterHidden ? true : false}}">
+    <view class="match" wx:for="{{filter}}" wx:key="lid" wx:for-item="item" bindtap="bindFilterTap" data-lid="{{item.lid}}">
+      <view class="match-box {{item.hover}}">{{item.name}}</view>
+    </view>
+    <view class="confirm">
+      <view class="confirm-box" bindtap="bindFilterConfirm">确定</view>
+    </view>
+  </view>
+  <view class="calendar" hidden="{{calendarHidden ? true : false}}">
+    <view class="top-handle">
+      <view class="prev" bindtap="handleCalendar" data-handle="prev"></view>
+      <view class="date-area">{{cur_month || "--"}}
+        <text>月</text>{{cur_year || "--"}}</view>
+      <view class="next" bindtap="handleCalendar" data-handle="next"></view>
+    </view>
+    <view class="weeks">
+      <view class="week" wx:for="{{weeks_ch}}" wx:key="{{index}}" data-idx="{{index}}">{{item}}</view>
+    </view>
+    <view class="days">
+      <view wx:if="{{hasEmptyGrid}}" class="grid" wx:for="{{empytGrids}}" wx:key="{{index}}" data-idx="{{index}}">
+      </view>
+      <view class="grid" wx:for="{{days}}" wx:key="{{index}}" data-idx="{{index}}">
+        <view wx:if="{{cur_year == thisYear && cur_month == thisMonth && index+1 < thisDay && index+1 > thisDay-8}}" class="day backday" bindtap="bindCalendarTap" data-day="{{index+1}}">{{item}}</view>
+        <view wx:elif="{{cur_year == thisYear && cur_month == thisMonth && index+1 == thisDay}}" class="day today">{{item}}</view>
+        <view wx:else class="day">{{item}}</view>
+      </view>
+    </view>
+    <view class="calendar_hide" bindtap="bindCalendarHide">
+      <view class="calendar_ico"></view>
+    </view>
+  </view>
+</view>
